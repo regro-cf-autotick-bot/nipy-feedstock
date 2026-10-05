@@ -1,0 +1,56 @@
+--- nipy-0.6.1.orig/lib/fff_python_wrapper/fffpy.c	2024-10-06 16:16:17.000000000 -0300
++++ nipy-0.6.1/lib/fff_python_wrapper/fffpy.c	2026-10-05 08:47:01.059783281 -0300
+@@ -41,7 +41,7 @@
+   npy_intp dim[1] = {(npy_intp)y->size};
+   npy_intp strides[1] = {stride};
+   PyArrayObject* X = (PyArrayObject*) PyArray_New(&PyArray_Type, 1, dim, type, strides,
+-						  (void*)x, itemsize, NPY_BEHAVED, NULL);
++						  (void*)x, itemsize, NPY_ARRAY_BEHAVED, NULL);
+   PyArrayObject* Y = (PyArrayObject*) PyArray_SimpleNewFromData(1, dim, NPY_DOUBLE, (void*)y->data);
+   PyArray_CopyInto(Y, X);
+   Py_XDECREF(Y);
+@@ -140,7 +140,7 @@
+      buffer to Python and transfer ownership */
+   if (y->owner) {
+     x = (PyArrayObject*) PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)y->data);
+-    x->flags = (x->flags) | NPY_OWNDATA;
++    x->flags = (x->flags) | NPY_ARRAY_OWNDATA;
+   }
+   /* Otherwise, create Python array from scratch */
+   else
+@@ -166,7 +166,7 @@
+   for (i=0; i<size; i++, bufX++, bufY+=stride)
+     *bufX = *bufY;
+   x = (PyArrayObject*) PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)data);
+-  x->flags = (x->flags) | NPY_OWNDATA;
++  x->flags = (x->flags) | NPY_ARRAY_OWNDATA;
+ 
+   return x;
+ }
+@@ -244,7 +244,7 @@
+      buffer to Python and transfer ownership */
+   if ((tda == size2) && (y->owner)) {
+     x = (PyArrayObject*) PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, (void*)y->data);
+-    x->flags = (x->flags) | NPY_OWNDATA;
++    x->flags = (x->flags) | NPY_ARRAY_OWNDATA;
+   }
+   /* Otherwise, create PyArray from scratch. Note, the input
+      fff_matrix is necessarily in row-major order. */
+@@ -278,7 +278,7 @@
+   }
+ 
+   x = (PyArrayObject*) PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, (void*)data);
+-  x->flags = (x->flags) | NPY_OWNDATA;
++  x->flags = (x->flags) | NPY_ARRAY_OWNDATA;
+ 
+   return x;
+ }
+@@ -467,7 +467,7 @@
+    x = (PyArrayObject*) PyArray_SimpleNewFromData(yy->ndims, dims, datatype, (void*)yy->data);
+ 
+   /* Transfer ownership to Python */
+-  x->flags = (x->flags) | NPY_OWNDATA;
++  x->flags = (x->flags) | NPY_ARRAY_OWNDATA;
+ 
+   /* Dealloc memory if needed */
+   if (! y->owner)

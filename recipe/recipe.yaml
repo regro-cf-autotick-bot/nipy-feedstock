@@ -1,0 +1,80 @@
+schema_version: 1
+
+context:
+  version: "0.6.1"
+
+package:
+  name: nipy
+  version: ${{ version }}
+
+source:
+  url: https://github.com/nipy/nipy/archive/${{ version }}.tar.gz
+  sha256: 79babfd76618a3573a4d5920d1fe46829a19df92ff3b98efa16bd9a51f7a7610
+  patches:
+    - no-int-conversion.patch
+    - modern_numpy.patch
+
+build:
+  number: 0
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - nipy_3dto4d = nipy.cli.img3dto4d:main
+      - nipy_4dto3d = nipy.cli.img4dto3d:main
+      - nipy_4d_realign = nipy.cli.realign4d:main
+      - nipy_tsdiffana = nipy.cli.tsdiffana:main
+      - nipy_diagnose = nipy.cli.diagnose:main
+
+requirements:
+  build:
+    - if: build_platform != target_platform
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - numpy >=2
+        - cython >=3
+    - ${{ compiler("c") }}
+    - ${{ stdlib("c") }}
+  host:
+    - python
+    - meson-python >=0.13
+    - ninja
+    - setuptools
+    - cython >=3
+    - numpy >=2
+    - pip
+  run:
+    - python
+    - numpy >=1.22
+    - scipy >=1.8
+    - nibabel >=3.2
+    - sympy >=1.9
+    - transforms3d
+
+tests:
+  - python:
+      imports:
+        - nipy
+      pip_check: true
+  - requirements:
+      run:
+        - python
+        - matplotlib-base
+    script:
+      - nipy_3dto4d --help
+      - nipy_4dto3d --help
+      - nipy_4d_realign --help
+      - nipy_tsdiffana --help
+      - nipy_diagnose --help
+
+about:
+  summary: A python package for analysis of neuroimaging data
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE
+    - nipy/algorithms/statistics/models/LICENSE.txt
+  homepage: https://nipy.org/nipy
+
+extra:
+  recipe-maintainers:
+    - ocefpaf
