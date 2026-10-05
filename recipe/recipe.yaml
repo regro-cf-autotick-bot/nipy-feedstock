@@ -13,6 +13,7 @@ source:
   patches:
     - no-int-conversion.patch
     - modern_numpy.patch
+    - fix_C2026_win.patch
 
 build:
   number: 0
@@ -60,12 +61,15 @@ tests:
       run:
         - python
         - matplotlib-base
+        - pytest >=7.2
+        - pytest-doctestplus
     script:
       - nipy_3dto4d --help
       - nipy_4dto3d --help
       - nipy_4d_realign --help
       - nipy_tsdiffana --help
       - nipy_diagnose --help
+      - python -m pytest --doctest-plus --ignore-glob="__config__.py" --pyargs nipy
 
 about:
   summary: A python package for analysis of neuroimaging data
